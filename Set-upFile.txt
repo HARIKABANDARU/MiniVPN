@@ -1,0 +1,44 @@
+PKI Infrastructure:
+========================
+Setting-up CA
+--------------
+
+mkdir server_cert
+cd server_cert
+mkdir certs crl newcerts
+touch index.txt serial
+echo 1000 > serial
+
+Creating pair of keys for CA using "openssl"
+-----------------------------------------------
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout CA_key.pem -out CA_Cert.pem
+
+Generate public/private Key Pair for your own domain example : "bandaru.com"
+-----------------------------------------------------------------------------
+openssl genrsa -aes128 -out hbandaru_key.pem 2048
+
+Generate certificate signing reqquest
+-------------------------------------------
+openssl req -new -key hbandaru_key.pem -out hbandaru.csr -sha256
+
+CA Sign Simulation
+-------------------------------
+openssl ca -in hbandaru.csr -out hbandaru_cert.pem -md sha256 -cert CA_Cert.pem -keyfile CA_Key.pem
+
+
+
+VPN Server Set-up
+=============================
+sudo ./Server 
+
+Assign IP to VPN SERVER TUN Device
+------------------------------------
+sudo ifconfig tun0 192.168.53.1/24 up
+
+//The server acts as router so we need to unable ip forwarding 
+sudo sysctl net.ipv4.ip_forward=1
+
+Establishes a P-T-P tunnel intervace which acts like virtual NIC card.
+
+
+
